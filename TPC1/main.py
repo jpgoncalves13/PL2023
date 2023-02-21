@@ -1,11 +1,12 @@
+import numpy as np
+
 from validator import *
-from pessoa import *
-from dados import *
+from person import *
+from data import *
 
 import matplotlib.pyplot as plt
-import networkx as nx 
 
-def carregar_dados(path):
+def dataLoad(path):
     file = open(path)
     f = file.readlines()
     f.pop(0) # tirar a primeira linha do comentario
@@ -52,7 +53,7 @@ def carregar_dados(path):
     return Dados(lista, extremos)
 
 
-def distribuicao_sexo(dados):
+def genderDistribution(dados):
     res = {
         "M" : {
             False : 0,
@@ -70,7 +71,7 @@ def distribuicao_sexo(dados):
     return res
 
 
-def distribuicao_etaria(dados):
+def ageDistribution(dados):
     max = dados.extremos["idade"]["max"]
 
     res = dict()    
@@ -87,7 +88,7 @@ def distribuicao_etaria(dados):
     return res
 
 
-def distribuicao_colesterol(dados):
+def colesterolDistribution(dados):
     min = dados.extremos["colesterol"]["min"]
     max = dados.extremos["colesterol"]["max"]
 
@@ -105,7 +106,7 @@ def distribuicao_colesterol(dados):
     return res
 
 
-def tabela_distribuicao(distribuicao):
+def distributionTable(distribuicao):
     # Define a tabela como uma lista de listas
     tabela = [["", "Com doença", "Sem doença"]]
     
@@ -125,9 +126,42 @@ def tabela_distribuicao(distribuicao):
             print("{:{}}".format(tabela[i][j], larguras[j]), end="  ")
         print()
 
+def distribution_to_graph(distribution, flag):
+    x_axis = np.arange(len(distribution.keys()))
+    x_coordinates = [str(elem) for elem in distribution.keys()]
+    y_cd = [elem[True] for elem in distribution.values()]
+    y_sd = [elem[False] for elem in distribution.values()]
+
+    plt.figure(figsize=[12, 9])
+
+    plt.barh(x_axis - 0.2, y_cd, label="Com doença", tick_label=x_coordinates, height=0.4, color="yellow")
+    plt.barh(x_axis + 0.2, y_sd, label="Sem doença", tick_label=x_coordinates, height=0.4, color="black")
+
+    plt.yticks(x_axis, distribution.keys())
+    plt.xlabel("Frequência")
+
+    for i, v in enumerate(y_cd):
+        if v != 0:
+            plt.text(v, i - 0.2, " " + str(v), color='black', va='center', fontsize='xx-small')
+
+    for i, v in enumerate(y_sd):
+        if v != 0:
+            plt.text(v, i + 0.2, " " + str(v), color='black', va='center', fontsize='xx-small')
+
+    match flag:
+        case 0:
+            plt.title("Distribuição por género")
+        case 1:
+            plt.title("Distribuição por idade")
+        case 2:
+            plt.title("Distribuição por colesterol")
+
+    plt.legend()
+    plt.show()
+
 def main():
 
-    dados = carregar_dados("myheart.csv")
+    dados = dataLoad("myheart.csv")
     
     print("Como pretende que sejam apresentadas as distribuições?\n")
     print("1 - Formato Textual")
@@ -137,27 +171,34 @@ def main():
 
     if res == '1':
         print("\nDistribuição da doença por sexo:")
-        tabela_distribuicao(distribuicao_sexo(dados))
+        distributionTable(genderDistribution(dados))
         print("\nDistribuição da doença por escalões etários:")
-        tabela_distribuicao(distribuicao_etaria(dados))
+        distributionTable(ageDistribution(dados))
         print("\nDistribuição da doença por níveis de colesterol:")
-        tabela_distribuicao(distribuicao_colesterol(dados))
+        distributionTable(colesterolDistribution(dados))
 
     elif res == '2':
-        res = distribuicao_sexo(dados)
+        print("Qual distribuição pretende visualizar em formato gráfico?")
+        print("1 - Distribuição da doença por sexo")
+        print("2 - Distribuição da doença por escalões etários")
+        print("3 - Distribuições da doença por níveis de colesterol")
+        print("4 - Sair")
 
-        labels = ['M','F']
-        vals = [int(res['M'][True]),int(res['F'][True])]
+        r = 0
 
-        fig, ax = plt.subplots(figsize=(8, 5))
-        ax.bar(labels, vals)
-        plt.show()
+        while r != 4:
+            r = int(input())
 
-    
-
-    #tabela_distribuicao(distribuicao_etaria(dados))
-    #print("\n")
-    #tabela_distribuicao(distribuicao_colesterol(dados))
+            if r == 1:
+                distribution_to_graph(genderDistribution(dados), 0)
+            elif r == 2:
+                distribution_to_graph(ageDistribution(dados), 1)
+            elif r == 3:
+                distribution_to_graph(colesterolDistribution(dados), 2)
+            elif r == 4:
+                print("A sair...")
+            else:
+                print("Opção Invalida")
 
 if __name__ == '__main__':
     main()
