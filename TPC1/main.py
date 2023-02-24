@@ -105,27 +105,6 @@ def colesterolDistribution(dados):
 
     return res
 
-
-def distributionTable(distribuicao):
-    # Define a tabela como uma lista de listas
-    tabela = [["", "Com doença", "Sem doença"]]
-    
-    for key in distribuicao.keys():
-        tabela += [[str(key), str(distribuicao[key][True]), str(distribuicao[key][False])]]
-
-    # Define o número de colunas e linhas da tabela
-    num_colunas = len(tabela[0])
-    num_linhas = len(tabela)
-
-    # Define a largura das colunas
-    larguras = [max(len(tabela[i][j]) for i in range(num_linhas)) for j in range(num_colunas)]
-
-    # Imprime a tabela
-    for i in range(num_linhas):
-        for j in range(num_colunas):
-            print("{:{}}".format(tabela[i][j], larguras[j]), end="  ")
-        print()
-
 def distribution_to_graph(distribution, flag):
     x_axis = np.arange(len(distribution.keys()))
     x_coordinates = [str(elem) for elem in distribution.keys()]
@@ -159,6 +138,18 @@ def distribution_to_graph(distribution, flag):
     plt.legend()
     plt.show()
 
+
+def distribution_to_table(distribution):
+    keys = list(distribution.keys())
+
+    table = "          | Com doença | Sem doença |\n"
+    for i in range(len(keys)):
+        table += ' ' * (9 - len(keys[i])) + f"{keys[i]} |"
+        table += ' ' * (11 - len(str(distribution[keys[i]][True]))) + f"{distribution[keys[i]][True]} |"
+        table += ' ' * (11 - len(str(distribution[keys[i]][False]))) + f"{distribution[keys[i]][False]} |\n"
+
+    print(table)
+
 def main():
 
     dados = dataLoad("myheart.csv")
@@ -171,11 +162,11 @@ def main():
 
     if res == '1':
         print("\nDistribuição da doença por sexo:")
-        distributionTable(genderDistribution(dados))
+        distribution_to_table(genderDistribution(dados))
         print("\nDistribuição da doença por escalões etários:")
-        distributionTable(ageDistribution(dados))
+        distribution_to_table(ageDistribution(dados))
         print("\nDistribuição da doença por níveis de colesterol:")
-        distributionTable(colesterolDistribution(dados))
+        distribution_to_table(colesterolDistribution(dados))
 
     elif res == '2':
         print("Qual distribuição pretende visualizar em formato gráfico?")
