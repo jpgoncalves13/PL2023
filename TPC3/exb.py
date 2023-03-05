@@ -1,59 +1,61 @@
 import re
 
+
 def calculate_cent(year):
     sec = year[0:2]
     if year[2] == 0 and year[3] == 0:
         return sec
     else:
-        return str(int(sec)+1)
+        return str(int(sec) + 1)
+
 
 def main():
-    file = open("processos.txt","r")
-    lines = file.readlines()
-    years_er = re.compile(r"\d+::(\d{4})-")
-    names_er = re.compile(r"::([A-Z][a-z]+) [A-Za-z]* ([A-Z][a-z]+)::")
+    with open("processos.txt", "r") as file:
+        lines = file.readlines()
 
-    cents = {}
+    er_years = re.compile(r"\d+::(\d{4})-")
+    er_names = re.compile(r"::([A-Z][a-z]+) [a-zA-Z ]*([A-Z][a-z]+)::")
+
+    centuries = {}
 
     for line in lines:
-        year = years_er.match(line)
-        names = names_er.findall(line)
+        year = er_years.match(line)
+        names_list = er_names.findall(line)
 
-    if year:
-        for name in names:
-            cent = calculate_cent(year.group(1))
-            if cent not in cents:
-                cents[cent] = {}
-                (cents[cent])["nomesP"] = {}
-                (cents[cent])["Apel"] = {}
+        if year:
+            for name in names_list:
+                century = calculate_cent(year.group(1))
+                if century not in centuries:
+                    centuries[century] = {}
+                    (centuries[century])['nomesProp'] = {}
+                    (centuries[century])['apelidos'] = {}
 
-            nomeP, Apel = name
+                first_name, last_name = name
 
-            if nomeP in (cents[cent])["nomesP"]:
-                cents[cent]["nomesP"][nomeP] += 1
-            else:
-                cents[cent]["nomesP"][nomeP] = 1
+                if first_name in ((centuries[century])['nomesProp']):
+                    ((centuries[century])['nomesProp'])[first_name] += 1
+                else:
+                    ((centuries[century])['nomesProp'])[first_name] = 1
 
-            if Apel in (cents[cent])["Apel"]:
-                cents[cent]["Apel"][Apel] += 1
-            else:
-                cents[cent]["Apel"][Apel] = 1
+                if last_name in ((centuries[century])['apelidos']):
+                    ((centuries[century])['apelidos'])[last_name] += 1
+                else:
+                    ((centuries[century])['apelidos'])[last_name] = 1
 
-    for century in cents:
+    for century in centuries:
         print('-' * 5 + 'Século ' + century + '-' * 5 + '\n')
         print('Top 5 nomes:')
 
-        sorted_first_names = sorted(((cents[century])['nomes']).items(), key=lambda x: x[1], reverse=True)
+        sorted_first_names = sorted(((centuries[century])['nomesProp']).items(), key=lambda x: x[1], reverse=True)
         for i in range(5):
             print(sorted_first_names[i])
 
         print('\nTop 5 apelidos:')
-        sorted_last_names = sorted(((cents[century])['apelidos']).items(), key=lambda x: x[1], reverse=True)
+        sorted_last_names = sorted(((centuries[century])['apelidos']).items(), key=lambda x: x[1], reverse=True)
         for i in range(5):
             print(sorted_last_names[i])
 
         print()
-
 
 
 if __name__ == '__main__':
