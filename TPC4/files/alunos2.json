@@ -1,0 +1,38 @@
+[
+    {
+        "Número": "3162",
+        "Nome": "Cândido",
+        "Curso": "Faísca",
+        "Notas": [
+            12,
+            13,
+            14,
+            15,
+            16
+        ]
+    },
+    {
+        "Número": "7777",
+        "Nome": "Cristiano",
+        "Curso": "Ronaldo",
+        "Notas": [
+            17,
+            12,
+            20,
+            11,
+            12
+        ]
+    },
+    {
+        "Número": "264",
+        "Nome": "Marcelo",
+        "Curso": "Sousa",
+        "Notas": [
+            18,
+            19,
+            19,
+            20,
+            18
+        ]
+    }
+]
