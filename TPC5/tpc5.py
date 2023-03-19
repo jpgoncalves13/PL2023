@@ -63,6 +63,38 @@ def moedas(line):
 
 
 def numero(line):
+    global levantado, dinheiro
+
+    if not levantado:
+        print("maq: \"O telefone não foi levantado.\"")
+    else:
+        numeroTelefone = line[2:][:1]
+
+        if re.fullmatch(r"(00\d{9}|\d{9})", numeroTelefone):
+            print("maq: \"Número de telefone inválido.\"")
+        elif numeroTelefone.startswith("601") or numeroTelefone.startswith("604"):
+            print("maq: \"Esse número não é permitido neste telefone. Queira discar novo número!\"")
+        elif numeroTelefone.startswith("00"):
+            if dinheiro < 150:
+                print("maq: \"Saldo insuficiente.\"")
+            else:
+                dinheiro -= 150
+                print(f"maq: \"saldo = {dinheiro // 100}e{dinheiro - (dinheiro// 100) * 100}c\"")
+        elif numeroTelefone.startswith("2"):
+            if dinheiro < 25:
+                print("maq: \"Saldo insuficiente.\"")
+            else:
+                dinheiro -= 25
+                print(f"maq: \"saldo = {dinheiro // 100}e{dinheiro - (dinheiro // 100) * 100}c\"")
+        elif numeroTelefone.startswith("808"):
+            if dinheiro < 10:
+                print("maq: \"Saldo insuficiente.\"")
+            else:
+                dinheiro -= 10
+                print(f"maq: \"saldo = {dinheiro // 100}e{dinheiro - (dinheiro // 100) * 100}c\"")
+        else:
+            print(f"maq: \"saldo = {dinheiro // 100}e{dinheiro - (dinheiro // 100) * 100}c\"")
+
 
 def abortar(line):
     global levantado, dinheiro
@@ -77,7 +109,7 @@ def main():
     comandos = {"LEVANTAR": levantar,
                 "POUSAR": pousar,
                 "MOEDA": moedas,
-                #"T": numero,
+                "T": numero,
                 "ABORTAR": abortar}
 
     while True:
