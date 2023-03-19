@@ -1,3 +1,4 @@
+import re
 
 levantado = False
 dinheiro=0
@@ -16,7 +17,7 @@ def troco():
 
     print(f"maq: \"O seu troco é = {moedas[200]}x2e, {moedas[100]}x1e, {moedas[50]}x50c, {moedas[20]}x20c, {moedas[10]}x10c, {moedas[5]}x5c, {moedas[2]}x2c, {moedas[1]}x1c;\"")
 
-def levantar():
+def levantar(line):
     global levantado
 
     if levantado:
@@ -25,7 +26,7 @@ def levantar():
         levantado=True
         print("Pode iniciar uma interação")
 
-def pousar():
+def pousar(line):
     global dinheiro, levantado
     if not levantado:
         print("Impossível pousar o telefone visto que não foi levantado")
@@ -35,11 +36,35 @@ def pousar():
         levantado = False
         dinheiro=0
 
-def moedas():
+def moedas(line):
+    global levantado, dinheiro
 
-def numero():
+    if not levantado:
+        print("Impossível inserir moedas")
+    else:
+        moedas = re.findall(r"\d+[ce]",line)
+        money_aux = 0
 
-def abortar():
+        for moeda in moedas:
+            if moeda[-1] == "e":
+                value = int(moeda[:-1]) * 100
+            else:
+                value = int(moeda[:-1])
+
+            if value not in [1, 2, 5, 10, 20, 50, 100, 200]:
+                print(f"maq: \"{moeda} - A moeda introduzida é inválida.\"")
+
+            else:
+                money_aux += value
+
+        dinheiro += money_aux
+
+        print(f"maq: \" O seu saldo é : {dinheiro // 100}e{dinheiro - (dinheiro // 100) * 100}c\"")
+
+
+def numero(line):
+
+def abortar(line):
     global levantado, dinheiro
 
     if not levantado:
@@ -51,7 +76,7 @@ def abortar():
 def main():
     comandos = {"LEVANTAR": levantar,
                 "POUSAR": pousar,
-                #"MOEDAS": moedas,
+                "MOEDA": moedas,
                 #"T": numero,
                 "ABORTAR": abortar}
 
@@ -59,7 +84,7 @@ def main():
         line = input()
         for key,value in comandos.items():
             if line.startswith(key):
-                value()
+                value(line)
 
 if __name__ == '__main__':
     main()
